@@ -1,4 +1,5 @@
 import { temperatureSettings } from './settings/temperature.js';
+import { humiditySettings } from './settings/humidity.js';
 
 var socket = io();
 var sensorData = [];
@@ -7,11 +8,18 @@ var chartData = [];
 var temperatureChart = new ApexCharts(document.querySelector("#temperatureChart"), temperatureSettings);
 temperatureChart.render();
 
+var humidityChart = new ApexCharts(document.querySelector("#humidityChart"), humiditySettings);
+humidityChart.render();
+
 socket.on('temperature-data', (content) => {
     sensorData.push(content);
     temperatureChart.updateSeries([{
         data: getNewSeries(getLastDate(), getLastTemperature())
     }])
+})
+
+socket.on('humidity-data', (data) => {
+    humidityChart.updateSeries([Math.floor(data.humidity)])
 })
 
 function getLastTemperature() {

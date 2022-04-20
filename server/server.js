@@ -12,16 +12,15 @@ const parser = new SerialPort.parsers.Readline();
 
 port.pipe(parser);
 
-port.on("open", function () {
+port.on('open', function () {
   console.log('Port opened');
   parser.on('data', function (data) {
-    const sensorData = {
-      temperature: data,
-      timestamp: moment().unix() // Unix timestamp
-    }
-    if (sensorData.temperature.includes("Temperature")) {
-      sensorData.temperature = sensorData.temperature.replace("Temperature: ", "");
-      io.emit('temperature-data', sensorData)
+    if (data.includes("Temperature")) {
+      const temperatureData = { temperature: data.replace('Temperature: ', ''), timestamp: moment().unix() }
+      io.emit('temperature-data', temperatureData)
+    } else if (data.includes("Humidity")) {
+      const humidityData = { humidity: data.replace('Humidity: ', '') };
+      io.emit('humidity-data', humidityData)
     }
   });
 });
